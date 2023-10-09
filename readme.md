@@ -93,3 +93,8 @@ Al utilizar una tarjeta de tipo boleto educativo gratuito se pueden realizar has
 - Modificar la función para cargar la tarjeta añadiendo esta funcionalidad.
 - Escribir un test que valide que si a una tarjeta se le carga un monto que supere el máximo permitido, se acredite el saldo hasta alcanzar el máximo(6600) y que el excedente quede almacenado y pendiente de acreditación.
 - Escribir un test que valide que luego de realizar un viaje, verifique si hay saldo pendiente de acreditación y recargue la tarjeta hasta llegar al máximo nuevamente.
+
+
+
+
+//holaaaa
