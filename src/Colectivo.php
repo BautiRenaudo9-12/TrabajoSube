@@ -9,17 +9,22 @@ class Colectivo
 {
     private $tarifa = 185;
 
-
     public function pagarCon(Tarjeta $tarjeta)
     {
-        if($tarjeta->getSaldo() - $this->tarifa >= $tarjeta->getMinSaldo()){
-            $tarjeta->descontarSaldo($this->tarifa);
-            return new Boleto($tarjeta->getSaldo(), $this->tarifa);
+        $costoNormal = $this->tarifa;
+
+        // Verificar si la tarjeta es de tipo MedioBoleto y ajustar el costo del boleto
+        if ($tarjeta instanceof MedioBoleto) {
+            $costoNormal = $tarjeta->calcularCostoBoleto($costoNormal); // Si es MedioBoleto, el costo del boleto es la mitad
         }
-        elseif (condition) {
-            # code...
+        elseif($tarjeta instanceof FranquiciaCompleta){
+            $costoNormal = 0;
         }
-        else{
+
+        if ($tarjeta->getSaldo() - $costoNormal >= $tarjeta->getMinSaldo()) {
+            $tarjeta->descontarSaldo($costoNormal);
+            return new Boleto($tarjeta->getSaldo(), $costoNormal);
+        } else {
             return false;
         }
     }

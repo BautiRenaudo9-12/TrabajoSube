@@ -26,7 +26,7 @@ class ColectivoTest extends TestCase
 
         $boleto = $colectivo->pagarCon($tarjeta);
 
-        $this->assertEquals(180, $boleto->getTarifa());
+        $this->assertEquals(185, $boleto->getTarifa());
     }
 
     public function testGetSaldo()
@@ -36,7 +36,7 @@ class ColectivoTest extends TestCase
 
         $boleto = $colectivo->pagarCon($tarjeta);
 
-        $this->assertEquals(20, $tarjeta->getSaldo());
+        $this->assertEquals(15, $tarjeta->getSaldo());
     }
 }
 

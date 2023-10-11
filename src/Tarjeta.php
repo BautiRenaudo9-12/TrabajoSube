@@ -79,11 +79,6 @@ class FranquiciaCompleta extends Tarjeta
         parent::__construct($saldoInicial);
         $this->tipoFranquicia = 'completa';
     }
-
-    public function puedePagarBoleto($costoBoleto)
-    {
-        return true; // Las tarjetas de franquicia completa siempre pueden pagar un boleto
-    }
 }
 
 class MedioBoleto extends Tarjeta
