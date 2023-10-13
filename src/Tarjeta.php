@@ -6,6 +6,7 @@ use PHPUnit\Event\Test\PassedSubscriber;
 
 class Tarjeta
 {
+    private $id;
     private $saldo;
     private $limiteSaldo = 6600;
 
@@ -18,11 +19,23 @@ class Tarjeta
 
     public function __construct($saldoInicial = 0)
     {
+        $this->id = $this->generarID();
         if ($saldoInicial < 0) {
             throw new Exception("El saldo inicial no puede ser negativo.");
         }
         $this->saldo = $saldoInicial;
         $this->viajesPlus = 2;
+        $this->tipoFranquicia = 'normal';
+    }
+    private function generarID()
+    {
+        static $contador = 1;
+        return $contador++;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function getSaldo()
@@ -31,15 +44,15 @@ class Tarjeta
     }
 
     public function verifyMonto($monto)
-{
-    if (($this->saldo + $monto) <= 6600 && in_array($monto, $this->cargasPosibles)) {
-        echo "Exito";
-        return true;
-    } else {
-        echo "No se puede cargar saldo";
-        return false;
+    {
+        if (($this->saldo + $monto) <= 6600 && in_array($monto, $this->cargasPosibles)) {
+            echo "Exito";
+            return true;
+        } else {
+            echo "No se puede cargar saldo";
+            return false;
+        }
     }
-}
 
 
     public function cargarSaldo($monto)

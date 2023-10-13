@@ -8,7 +8,7 @@ class FranquiciaTest extends TestCase
 {
     public function testFranquiciaCompletaPuedePagarBoleto()
     {
-        $colectivo = new Colectivo;
+        $colectivo = new Colectivo(145);
         $tarjeta = new FranquiciaCompleta();
         $saldoAntesDePagar = $tarjeta->getSaldo(); 
         $boleto = $colectivo->pagarCon($tarjeta);

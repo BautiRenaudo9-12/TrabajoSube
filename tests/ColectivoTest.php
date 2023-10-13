@@ -11,7 +11,7 @@ class ColectivoTest extends TestCase
 {
     public function testPagarConSaldoSuficiente()
     {
-        $colectivo = new Colectivo();
+        $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
         $boleto = $colectivo->pagarCon($tarjeta);
@@ -21,7 +21,7 @@ class ColectivoTest extends TestCase
 
     public function testGetTarifa()
     {
-        $colectivo = new Colectivo();
+        $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
         $boleto = $colectivo->pagarCon($tarjeta);
@@ -31,7 +31,7 @@ class ColectivoTest extends TestCase
 
     public function testGetSaldo()
     {
-        $colectivo = new Colectivo();
+        $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
         $boleto = $colectivo->pagarCon($tarjeta);
