@@ -9,7 +9,6 @@ class Tarjeta
     private $id;
     private $saldo;
     private $limiteSaldo = 6600;
-
     private $minSaldo = -211.84;
     private $viajesPlus;
 
@@ -46,10 +45,8 @@ class Tarjeta
     public function verifyMonto($monto)
     {
         if (($this->saldo + $monto) <= 6600 && in_array($monto, $this->cargasPosibles)) {
-            echo "Exito";
             return true;
         } else {
-            echo "No se puede cargar saldo";
             return false;
         }
     }
@@ -96,16 +93,70 @@ class FranquiciaCompleta extends Tarjeta
 
 class MedioBoleto extends Tarjeta
 {
-    public function __construct($saldoInicial = 0)
+    private $ultimoViaje;
+    private $cantViajesDia;
+    protected $tiempo;
+
+    public function __construct($saldoInicial = 0, TiempoInterface $tiempo)
     {
         parent::__construct($saldoInicial);
         $this->tipoFranquicia = 'parcial';
+        $this->ultimoViaje = null;
+        $this->cantViajesDia = 0;
+        $this->tiempo = $tiempo; // Inyectar TiempoInterface
     }
 
     public function calcularCostoBoleto($costoNormal)
     {
-        return $costoNormal / 2; // El costo del boleto es siempre la mitad del normal
+        if ($this->cantViajesDia <= 4) {
+            return $costoNormal / 2; // El costo del boleto es siempre la mitad del normal
+        } else {
+            return $costoNormal;
+        }
+    }
+
+    public function setUltimoViaje(TiempoInterface $tiempo)
+    {
+        $this->ultimoViaje = $tiempo->time();
+        $this->cantViajesDia ++;
+    }
+
+    public function getUltimoViaje()
+    {
+        return $this->ultimoViaje;
+    }
+
+    public function getCantViajesDia()
+    {
+        return $this->cantViajesDia;
+    }
+
+    public function puedeRealizarViaje(TiempoInterface $tiempo)
+    {
+        if ($this->ultimoViaje === null) {
+            return true; // Si es el primer viaje, siempre se permite
+        }
+
+        if($this->cantViajesDia >= 4){
+            return true;
+        }
+
+        $tiempoActual = $tiempo->time(); // Utiliza la implementación de TiempoInterface
+        $tiempoPasado = $tiempoActual - $this->ultimoViaje;
+
+        // Si es un nuevo día, reiniciar el contador de viajes realizados
+        if (date('d/m/Y', $tiempoActual) !== date('d/m/Y', $this->ultimoViaje)) {
+            $this->viajesRealizadosHoy = 0;
+        }
+
+        // Se permite el viaje si han pasado al menos 5 minutos (300 segundos) y no se han excedido los 4 viajes en un día
+        return ($tiempoPasado >= 300);
+    }
+
+    public function cambiarTiempo($tiempoCambiar){
+        $this->tiempo = $tiempoCambiar;
     }
 }
+
 
 ?>

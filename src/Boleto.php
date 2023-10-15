@@ -6,10 +6,9 @@ use Exception;
 class Boleto
 {
     private $dataTarjeta;
-    public function __construct($saldoInicial, $tarifa, $tipoTarjeta='normal', $lineaColectivo, $idTarjeta, $fecha=0, $abonoNegativo) {
-        date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-        $fecha = time();
+    public function __construct($saldoInicial, $tarifa, $tipoTarjeta='normal', $lineaColectivo, $idTarjeta, $abonoNegativo) {
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
 
         $this->dataTarjeta = [
             'saldoInicial' => $saldoInicial,
@@ -18,7 +17,7 @@ class Boleto
             'tipoTarjeta' => $tipoTarjeta,
             'lineaColectivo' => $lineaColectivo,
             'idTarjeta' => $idTarjeta,
-            'fecha' => date('d/m/Y H:i:s', $fecha),
+            'fecha' => date('d/m/Y H:i:s', time()),
             'abonoNegativo' => 'Abona saldo ' . $abonoNegativo,
         ];
     }

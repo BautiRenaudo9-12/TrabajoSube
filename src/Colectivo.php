@@ -15,7 +15,7 @@ class Colectivo
         $this->linea = $linea;
     }
 
-    public function pagarCon(Tarjeta $tarjeta)
+    public function pagarCon(Tarjeta $tarjeta, TiempoInterface $tiempo)
     {
         $costoNormal = $this->tarifa;
         $tipoTarjeta = 'normal';
@@ -23,22 +23,35 @@ class Colectivo
         $diferencia = $tarjeta->getSaldo() - $costoNormal;
         $saldoInicial = $tarjeta->getSaldo();
 
-        // Verificar si la tarjeta es de tipo MedioBoleto y ajustar el costo del boleto
-        if ($tarjeta instanceof MedioBoleto) {
-            $costoNormal = $tarjeta->calcularCostoBoleto($costoNormal);
-            $tipoTarjeta = 'parcial';
-        }
-        elseif($tarjeta instanceof FranquiciaCompleta){
-            $costoNormal = 0;
-            $tipoTarjeta = 'completa';
-        }
-
         if ($diferencia >= $tarjeta->getMinSaldo()) {
-            $tarjeta->descontarSaldo($costoNormal);
+            // Verificar si la tarjeta es de tipo MedioBoleto y ajustar el costo del boleto
+            if ($tarjeta instanceof MedioBoleto) {
+                $tarjeta->cambiarTiempo($tiempo);
+                if($tarjeta->puedeRealizarViaje($tiempo)){
+                    if($tarjeta->getCantViajesDia() < 4){
+                        $costoNormal    =$tarjeta->calcularCostoBoleto ($costoNormal);
+                    }
+                    $tipoTarjeta = 'parcial';
+                    $tarjeta->descontarSaldo($costoNormal);
+                    $tarjeta->setUltimoViaje($tiempo);
+                }
+                else{
+                    return false;
+                }
+            }
+            elseif($tarjeta instanceof FranquiciaCompleta){
+                $costoNormal = 0;
+                $tipoTarjeta = 'completa';
+                $tarjeta->descontarSaldo($costoNormal);
+            }
+            elseif ($tarjeta instanceof Tarjeta) {
+                $tarjeta->descontarSaldo($costoNormal);
+            }
+            
             if($diferencia < 0){
                 $saldoNegativo = abs($diferencia);
             }
-            return new Boleto($saldoInicial, $costoNormal,$tipoTarjeta,$this->linea,$tarjeta->getId(),0,$abonoNegativo = $saldoNegativo);
+            return new Boleto($saldoInicial, $costoNormal,$tipoTarjeta,$this->linea,$tarjeta->getId(),$abonoNegativo = $saldoNegativo);
         } else {
             return false;
         }
