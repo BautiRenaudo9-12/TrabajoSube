@@ -22,7 +22,7 @@ class BoletoTest extends TestCase
         $tiempoFalso = new TiempoFalso();
         $tarjetaNormal = new Tarjeta(100);
         $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
-        $tarjetaCompleta = new FranquiciaCompleta(100);
+        $tarjetaCompleta = new FranquiciaCompleta(100, $tiempoFalso);
 
         $colectivo = new Colectivo(145);
 
@@ -47,7 +47,7 @@ class BoletoTest extends TestCase
         $tiempoFalso = new TiempoFalso();
         $tarjetaNormal = new Tarjeta(100);
         $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
-        $tarjetaCompleta = new FranquiciaCompleta(100);
+        $tarjetaCompleta = new FranquiciaCompleta(100, $tiempoFalso);
 
         $colectivo = new Colectivo(145);
 
