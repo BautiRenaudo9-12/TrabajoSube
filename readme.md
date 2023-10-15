@@ -128,3 +128,16 @@ En la fecha pactada comenzará la defensa y devolución del trabajo realizado. P
 - Un mínimo de 80% de cobertura de código.
 - El correcto funcionamiento del código.
 - Uso de git.
+
+
+
+Summary
+Copilot
+Rewards
+Settings
+Copilot
+raw.githubusercontent.com
+Ask a follow-up question
+GPT-3.5
+GPT-4
+
