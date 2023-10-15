@@ -17,7 +17,6 @@ class TarjetaTest extends TestCase
     {
         $tarjeta = new Tarjeta(0);
         $tarjeta->cargarSaldo(500);
-        echo $tarjeta->getSaldo();
         $this->assertEquals(500, $tarjeta->getSaldo());
     }
 
@@ -49,6 +48,64 @@ class TarjetaTest extends TestCase
         $this->assertFalse($result);
     }
 
+    public function testIntervaloMedioBoleto()
+    {
+        $tiempoFalso = new TiempoFalso(); // Crear una instancia de TiempoFalso
+        $tarjeta = new MedioBoleto(1000, $tiempoFalso); // Inyectar TiempoFalso en MedioBoleto
+        $colectivo = new Colectivo(145);
+
+        // Realizar el primer viaje, que siempre debería ser exitoso
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(907.5, $tarjeta->getSaldo());
+        $this->assertEquals(1, $tarjeta->getCantViajesDia());
+        $this->assertEquals(0, $tarjeta->getUltimoViaje());
+
+        // Avanzar el tiempo en 4 minutos (240 segundos)
+        $tiempoFalso->avanzarSegundos(240);
+
+        // Intentar realizar el segundo viaje en menos de 5 minutos
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertFalse($boleto);
+        $this->assertEquals(907.5, $tarjeta->getSaldo());
+        $this->assertEquals(1, $tarjeta->getCantViajesDia());
+        $this->assertEquals(0, $tarjeta->getUltimoViaje());
+
+        // Avanzar el tiempo en 1 minuto (60 segundos) para permitir el siguiente viaje
+        $tiempoFalso->avanzarSegundos(60);
+
+        // Realizar el segundo viaje después de mas de 5 minutos, debería ser exitoso
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(815, $tarjeta->getSaldo());
+        $this->assertEquals(2, $tarjeta->getCantViajesDia());
+        $this->assertEquals(300, $tarjeta->getUltimoViaje());
+
+        $tiempoFalso->avanzarSegundos(300);
+
+        $this->assertEquals(600, $tiempoFalso->time());
+
+        // Realizar el tercer viaje después de 5 minutos, debería ser exitoso
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals(722.5, $tarjeta->getSaldo());
+        $this->assertEquals(3, $tarjeta->getCantViajesDia());
+        $this->assertEquals(600, $tarjeta->getUltimoViaje());
+        $this->assertInstanceOf(Boleto::class, $boleto);
+
+        $tiempoFalso->avanzarSegundos(300);
+
+        $this->assertEquals(900, $tiempoFalso->time());
+
+        // Realizar el cuarto viaje, que debería ser exitoso
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals(630, $tarjeta->getSaldo());
+        $this->assertEquals(4, $tarjeta->getCantViajesDia());
+        $this->assertEquals(900, $tarjeta->getUltimoViaje());
+        $this->assertInstanceOf(Boleto::class, $boleto);
+
+        //Realizar el cuarto viaje, que ya debería tener su valor normal
+
+    }
 }
 
 
