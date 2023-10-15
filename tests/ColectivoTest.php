@@ -1,5 +1,5 @@
 <?php
-namespace TrabajoSube\Tests;
+namespace TrabajoSube;
 
 use PHPUnit\Framework\TestCase;
 use TrabajoSube\Colectivo;
@@ -11,30 +11,33 @@ class ColectivoTest extends TestCase
 {
     public function testPagarConSaldoSuficiente()
     {
+        $tiempoFalso = new TiempoFalso();
         $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
-        $boleto = $colectivo->pagarCon($tarjeta);
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
 
         $this->assertInstanceOf(Boleto::class, $boleto);
     }
 
     public function testGetTarifa()
     {
+        $tiempoFalso = new TiempoFalso();
         $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
-        $boleto = $colectivo->pagarCon($tarjeta);
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
 
         $this->assertEquals(185, $boleto->getTarifa());
     }
 
     public function testGetSaldo()
     {
+        $tiempoFalso = new TiempoFalso();
         $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
-        $boleto = $colectivo->pagarCon($tarjeta);
+        $boleto = $colectivo->pagarCon($tarjeta,$tiempoFalso);
 
         $this->assertEquals(15, $tarjeta->getSaldo());
     }

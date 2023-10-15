@@ -1,5 +1,5 @@
 <?php
-namespace TrabajoSube\Tests;
+namespace TrabajoSube;
 
 use PHPUnit\Framework\TestCase;
 use TrabajoSube\Boleto;
@@ -12,23 +12,25 @@ class BoletoTest extends TestCase
 {
     public function testTarifaCorrecta()
     {
-        $boleto = new Boleto(1000, 500,'normal',145,1,0,0);
+        $tiempoFalso = new TiempoFalso();
+        $boleto = new Boleto(1000, 500,'normal',145,1,0,$tiempoFalso);
         $this->assertEquals(500, $boleto->getTarifa());
     }
 
     public function testSaldoRestanteCorrecto()
     {
+        $tiempoFalso = new TiempoFalso();
         $tarjetaNormal = new Tarjeta(100);
-        $tarjetaMedioBoleto = new MedioBoleto(100);
+        $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
         $tarjetaCompleta = new FranquiciaCompleta(100);
 
         $colectivo = new Colectivo(145);
 
-        $boletoNormal = $colectivo->pagarCon($tarjetaNormal);
+        $boletoNormal = $colectivo->pagarCon($tarjetaNormal, $tiempoFalso);
 
-        $boletoMedio = $colectivo->pagarCon($tarjetaMedioBoleto);
+        $boletoMedio = $colectivo->pagarCon($tarjetaMedioBoleto, $tiempoFalso);
 
-        $boletoCompleta = $colectivo->pagarCon($tarjetaCompleta);
+        $boletoCompleta = $colectivo->pagarCon($tarjetaCompleta, $tiempoFalso);
 
         $dataTarjetaNormal = $boletoNormal->getDataTarjeta();
         $this->assertEquals(-85, $dataTarjetaNormal['saldoRestante']);
@@ -42,17 +44,18 @@ class BoletoTest extends TestCase
 
     public function testTiposBoleto()
     {
+        $tiempoFalso = new TiempoFalso();
         $tarjetaNormal = new Tarjeta(100);
-        $tarjetaMedioBoleto = new MedioBoleto(100);
+        $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
         $tarjetaCompleta = new FranquiciaCompleta(100);
 
         $colectivo = new Colectivo(145);
 
-        $boletoNormal = $colectivo->pagarCon($tarjetaNormal);
+        $boletoNormal = $colectivo->pagarCon($tarjetaNormal, $tiempoFalso);
 
-        $boletoMedio = $colectivo->pagarCon($tarjetaMedioBoleto);
+        $boletoMedio = $colectivo->pagarCon($tarjetaMedioBoleto, $tiempoFalso);
 
-        $boletoCompleta = $colectivo->pagarCon($tarjetaCompleta);
+        $boletoCompleta = $colectivo->pagarCon($tarjetaCompleta, $tiempoFalso);
 
         $dataTarjetaNormal = $boletoNormal->getDataTarjeta();
         $this->assertEquals('normal', $dataTarjetaNormal['tipoTarjeta']);
