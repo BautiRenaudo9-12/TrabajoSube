@@ -103,8 +103,14 @@ class TarjetaTest extends TestCase
         $this->assertEquals(900, $tarjeta->getUltimoViaje());
         $this->assertInstanceOf(Boleto::class, $boleto);
 
-        //Realizar el cuarto viaje, que ya debería tener su valor normal
+        $tiempoFalso->avanzarSegundos(300);
 
+        //Realizar el quinto viaje, que ya debería tener su valor normal
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals(445, $tarjeta->getSaldo());
+        $this->assertEquals(5, $tarjeta->getCantViajesDia());
+        $this->assertEquals(1200, $tarjeta->getUltimoViaje());
+        $this->assertInstanceOf(Boleto::class, $boleto);
     }
 }
 

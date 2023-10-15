@@ -27,11 +27,11 @@ class Colectivo
             // Verificar si la tarjeta es de tipo MedioBoleto y ajustar el costo del boleto
             if ($tarjeta instanceof MedioBoleto) {
                 $tarjeta->cambiarTiempo($tiempo);
-                if($tarjeta->puedeRealizarViaje($tiempo)){
+                $tipoTarjeta = 'parcial';
+                if($tarjeta->puedePagarMedioBoleto($tiempo)){
                     if($tarjeta->getCantViajesDia() < 4){
                         $costoNormal    =$tarjeta->calcularCostoBoleto ($costoNormal);
                     }
-                    $tipoTarjeta = 'parcial';
                     $tarjeta->descontarSaldo($costoNormal);
                     $tarjeta->setUltimoViaje($tiempo);
                 }
@@ -40,9 +40,16 @@ class Colectivo
                 }
             }
             elseif($tarjeta instanceof FranquiciaCompleta){
-                $costoNormal = 0;
+                $tarjeta->cambiarTiempo($tiempo);
                 $tipoTarjeta = 'completa';
-                $tarjeta->descontarSaldo($costoNormal);
+                if($tarjeta->puedeViajarGratis($tiempo)){
+                    $costoNormal = 0;
+                    $tarjeta->descontarSaldo($costoNormal);
+                    $tarjeta->setUltimoViaje($tiempo);
+                }
+                else{
+                    $tarjeta->descontarSaldo($costoNormal);
+                }
             }
             elseif ($tarjeta instanceof Tarjeta) {
                 $tarjeta->descontarSaldo($costoNormal);

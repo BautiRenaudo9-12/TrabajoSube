@@ -10,7 +10,6 @@ class Tarjeta
     private $saldo;
     private $limiteSaldo = 6600;
     private $minSaldo = -211.84;
-    private $viajesPlus;
 
     public $tipoFranquicia;
 
@@ -23,7 +22,6 @@ class Tarjeta
             throw new Exception("El saldo inicial no puede ser negativo.");
         }
         $this->saldo = $saldoInicial;
-        $this->viajesPlus = 2;
         $this->tipoFranquicia = 'normal';
     }
     private function generarID()
@@ -71,23 +69,48 @@ class Tarjeta
         return $this->minSaldo;
     }
 
-    public function getViajesPlus()
-    {
-        return $this->viajesPlus;
+    public function getTipoTarjeta(){
+        return $this->tipoFranquicia;
     }
-
-    public function usarViajePlus(){
-        $this->viajesPlus--;
-    }
-
 }
 
 class FranquiciaCompleta extends Tarjeta
 {
-    public function __construct($saldoInicial = 0)
+    private $ultimoViaje;
+    private $cantViajesDia;
+    protected $tiempo;
+
+    public function __construct($saldoInicial = 0, TiempoInterface $tiempo)
     {
         parent::__construct($saldoInicial);
         $this->tipoFranquicia = 'completa';
+        $this->ultimoViaje = null;
+        $this->cantViajesDia = 0;
+        $this->tiempo = $tiempo;
+    }
+
+    public function getCantViajesDia()
+    {
+        return $this->cantViajesDia;
+    }
+
+    public function setUltimoViaje($tiempo){
+        $this->ultimoViaje = $tiempo->time();
+        $this->cantViajesDia ++;
+    }
+
+    public function getUltimoViaje(){
+        return $this->ultimoViaje;
+    }
+
+    public function puedeViajarGratis(TiempoInterface $tiempo)
+    {
+        $fechaActual = date('d/m/Y', $tiempo->time());
+        return ($this->cantViajesDia < 2 && ($fechaActual === date('d/m/Y', $this->ultimoViaje) || $this->ultimoViaje === null));
+    }
+
+    public function cambiarTiempo($tiempoCambiar){
+        $this->tiempo = $tiempoCambiar;
     }
 }
 
@@ -103,16 +126,21 @@ class MedioBoleto extends Tarjeta
         $this->tipoFranquicia = 'parcial';
         $this->ultimoViaje = null;
         $this->cantViajesDia = 0;
-        $this->tiempo = $tiempo; // Inyectar TiempoInterface
+        $this->tiempo = $tiempo;
     }
 
     public function calcularCostoBoleto($costoNormal)
     {
         if ($this->cantViajesDia <= 4) {
-            return $costoNormal / 2; // El costo del boleto es siempre la mitad del normal
+            return $costoNormal / 2;
         } else {
             return $costoNormal;
         }
+    }
+
+    public function getCantViajesDia()
+    {
+        return $this->cantViajesDia;
     }
 
     public function setUltimoViaje(TiempoInterface $tiempo)
@@ -126,12 +154,7 @@ class MedioBoleto extends Tarjeta
         return $this->ultimoViaje;
     }
 
-    public function getCantViajesDia()
-    {
-        return $this->cantViajesDia;
-    }
-
-    public function puedeRealizarViaje(TiempoInterface $tiempo)
+    public function puedePagarMedioBoleto(TiempoInterface $tiempo)
     {
         if ($this->ultimoViaje === null) {
             return true; // Si es el primer viaje, siempre se permite

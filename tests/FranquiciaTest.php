@@ -10,15 +10,48 @@ use TrabajoSube\Tarjeta;
 
 class FranquiciaTest extends TestCase
 {
-    public function testFranquiciaCompletaPuedePagarBoleto()
+
+    public function testFranquiciaCompletaNoMasDeDosViajesPorDia(){
+        $tiempoFalso = new TiempoFalso();
+        $colectivo = new Colectivo(145);
+        $tarjeta = new FranquiciaCompleta(185, $tiempoFalso);
+
+        // Primer viaje del dia gratiuto
+        $saldoAntesDePagar = $tarjeta->getSaldo(); 
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals(1, $tarjeta->getCantViajesDia());
+
+        // Segundo viaje del dia gratuito
+        $saldoAntesDePagar = $tarjeta->getSaldo(); 
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals(2, $tarjeta->getCantViajesDia());
+
+        // Terecer viaje del dia pago
+        $viajesGratuitosAntes = $tarjeta->getCantViajesDia();
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertTrue(3 > $tarjeta->getCantViajesDia());
+    }
+
+    public function testFranquiciaCompletaPrecioNormalDespuesDeDosViajes()
     {
         $tiempoFalso = new TiempoFalso();
         $colectivo = new Colectivo(145);
-        $tarjeta = new FranquiciaCompleta();
+        $tarjeta = new FranquiciaCompleta(185, $tiempoFalso);
+
+        // Boleto gratuito 1
         $saldoAntesDePagar = $tarjeta->getSaldo(); 
         $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals($boleto->getSaldoRestante(), $saldoAntesDePagar);
 
-        $this->assertEquals($boleto->getSaldoRestante(), $saldoAntesDePagar); // La franquicia completa siempre puede pagar el boleto
+        // Boleto gratuito 2
+        $saldoAntesDePagar = $tarjeta->getSaldo(); 
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals($boleto->getSaldoRestante(), $saldoAntesDePagar);
+
+        // Boleto normal
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals('completa', $tarjeta->getTipoTarjeta());
+        $this->assertEquals(0, $boleto->getSaldoRestante());
     }
 
     public function testMedioBoletoCalculaCostoCorrecto()
