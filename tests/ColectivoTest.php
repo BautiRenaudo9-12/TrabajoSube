@@ -16,8 +16,9 @@ class ColectivoTest extends TestCase
         $tarjeta = new Tarjeta(200);
 
         $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
-
         $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(15, $tarjeta->getSaldo());
+
     }
 
     public function testGetTarifa()
