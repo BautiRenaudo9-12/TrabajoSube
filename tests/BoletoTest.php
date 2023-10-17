@@ -20,7 +20,7 @@ class BoletoTest extends TestCase
     public function testSaldoRestanteCorrecto()
     {
         $tiempoFalso = new TiempoFalso();
-        $tarjetaNormal = new Tarjeta(100);
+        $tarjetaNormal = new Tarjeta(1000);
         $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
         $tarjetaCompleta = new FranquiciaCompleta(100, $tiempoFalso);
 
@@ -33,7 +33,7 @@ class BoletoTest extends TestCase
         $boletoCompleta = $colectivo->pagarCon($tarjetaCompleta, $tiempoFalso);
 
         $dataTarjetaNormal = $boletoNormal->getDataTarjeta();
-        $this->assertEquals(-85, $dataTarjetaNormal['saldoRestante']);
+        $this->assertEquals(815, $dataTarjetaNormal['saldoRestante']);
 
         $dataTarjetaMedioBoleto = $boletoMedio->getDataTarjeta();
         $this->assertEquals(7.5, $dataTarjetaMedioBoleto['saldoRestante']);
