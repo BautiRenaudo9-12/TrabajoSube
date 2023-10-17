@@ -33,6 +33,9 @@ class Colectivo
                         $costoNormal    =$tarjeta->calcularCostoBoleto ($costoNormal);
                     }
                     $tarjeta->descontarSaldo($costoNormal);
+                    if($tarjeta->puedeCargarSaldoPendiente()){
+                        $tarjeta->cargarSaldoPendiente($saldoInicial);
+                    }
                     $tarjeta->setUltimoViaje($tiempo);
                 }
                 else{
@@ -45,14 +48,23 @@ class Colectivo
                 if($tarjeta->puedeViajarGratis($tiempo)){
                     $costoNormal = 0;
                     $tarjeta->descontarSaldo($costoNormal);
+                    if($tarjeta->puedeCargarSaldoPendiente()){
+                        $tarjeta->cargarSaldoPendiente($saldoInicial);
+                    }
                     $tarjeta->setUltimoViaje($tiempo);
                 }
                 else{
                     $tarjeta->descontarSaldo($costoNormal);
+                    if($tarjeta->puedeCargarSaldoPendiente()){
+                        $tarjeta->cargarSaldoPendiente($saldoInicial);
+                    }
                 }
             }
             elseif ($tarjeta instanceof Tarjeta) {
                 $tarjeta->descontarSaldo($costoNormal);
+                if($tarjeta->puedeCargarSaldoPendiente()){
+                    $tarjeta->cargarSaldoPendiente($saldoInicial);
+                }
             }
             
             if($diferencia < 0){

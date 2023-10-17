@@ -9,20 +9,27 @@ class Tarjeta
     private $id;
     private $saldo;
     private $limiteSaldo = 6600;
+    private $montoPendienteAcreditacion = 0;
     private $minSaldo = -211.84;
 
     public $tipoFranquicia;
 
-    private $cargasPosibles = array(150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 2000, 2500, 3000, 3500, 4000);
+    private $cargasPosibles;
 
     public function __construct($saldoInicial = 0)
     {
         $this->id = $this->generarID();
-        if ($saldoInicial < 0) {
+        $this->cargasPosibles = array(150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 2000, 2500, 3000, 3500, 4000);
+        if ($saldoInicial < 0 ) {
             throw new Exception("El saldo inicial no puede ser negativo.");
         }
-        $this->saldo = $saldoInicial;
-        $this->tipoFranquicia = 'normal';
+        if($saldoInicial <= 6600){
+            $this->saldo = $saldoInicial;
+            $this->tipoFranquicia = 'normal';
+        }
+        else{
+            throw new Exception("La tarjeta no puede almacenar mas de 6600 pesos.");
+        }
     }
     private function generarID()
     {
@@ -42,21 +49,48 @@ class Tarjeta
 
     public function verifyMonto($monto)
     {
-        if (($this->saldo + $monto) <= 6600 && in_array($monto, $this->cargasPosibles)) {
+        if (in_array($monto, $this->cargasPosibles)) {
             return true;
         } else {
             return false;
         }
     }
 
-
     public function cargarSaldo($monto)
     {
         if ($this->verifyMonto($monto)) {
-            $this->saldo += $monto;
+            if(($this->saldo + $monto) < 6600){
+                $this->saldo += $monto;
+            }
+            else{
+                $this->montoPendienteAcreditacion += $this->saldo + $monto - 6600;
+                $this->saldo = 6600;
+            }
         } else {
             echo "No se puede cargar saldo";
         }
+    }
+
+    public function puedeCargarSaldoPendiente(){
+        if($this->montoPendienteAcreditacion > 0){
+            return true;
+        }
+    }
+
+    public function cargarSaldoPendiente($saldoAnterior){
+        $supuestoSaldoAcreditado = $this->montoPendienteAcreditacion + $this->saldo;
+        if($supuestoSaldoAcreditado <= 6600 ){
+            $this->montoPendienteAcreditacion = 0;
+            $this->saldo = $supuestoSaldoAcreditado;
+        }
+        else{
+            $this->montoPendienteAcreditacion = $supuestoSaldoAcreditado - 6600;
+            $this->saldo = 6600;
+        }
+    }
+
+    public function getMontoPendiente(){
+        return $this->montoPendienteAcreditacion;
     }
 
     public function descontarSaldo($montoDescontar)

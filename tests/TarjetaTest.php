@@ -112,7 +112,89 @@ class TarjetaTest extends TestCase
         $this->assertEquals(1200, $tarjeta->getUltimoViaje());
         $this->assertInstanceOf(Boleto::class, $boleto);
     }
+
+    public function testSaldoPendienteAcreditacionNormal()
+    {
+        $tarjeta = new Tarjeta(6500);
+        $colectivo = new Colectivo(145);
+        $tiempoFalso = new TiempoFalso();
+
+        $tarjeta->cargarSaldo(150);
+        $this->assertEquals(50, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(6465, $tarjeta->getSaldo());
+
+        $tarjeta->cargarSaldo(600);
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+        $this->assertEquals(465, $tarjeta->getMontoPendiente());
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(280, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+    }
+
+    public function testSaldoPendienteAcreditacionParcial()
+    {
+        $tiempoFalso = new TiempoFalso();
+        $tarjeta = new MedioBoleto(6500, $tiempoFalso);
+        $colectivo = new Colectivo(145);
+
+        $tarjeta->cargarSaldo(150);
+        $this->assertEquals(50, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(6557.5, $tarjeta->getSaldo());
+
+        $tarjeta->cargarSaldo(600);
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+        $this->assertEquals(557.5, $tarjeta->getMontoPendiente());
+
+        $tiempoFalso->avanzarSegundos(301);
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(465, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+    }
+
+    public function testSaldoPendienteAcreditacionCompleta()
+    {
+        $tiempoFalso = new TiempoFalso();
+        $tarjeta = new FranquiciaCompleta(6500, $tiempoFalso);
+        $colectivo = new Colectivo(145);
+
+        $tarjeta->cargarSaldo(150);
+        $this->assertEquals(50, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(50, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+
+        $tarjeta->cargarSaldo(600);
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+        $this->assertEquals(650, $tarjeta->getMontoPendiente());
+
+        $tiempoFalso->avanzarSegundos(301);
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(650, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+
+        $tiempoFalso->avanzarSegundos(301);
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertEquals(465, $tarjeta->getMontoPendiente());
+        $this->assertEquals(6600, $tarjeta->getSaldo());
+    }
 }
-
-
 ?>
