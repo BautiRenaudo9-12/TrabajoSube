@@ -33,6 +33,7 @@ class Colectivo
                         $costoNormal    =$tarjeta->calcularCostoBoleto ($costoNormal);
                     }
                     $tarjeta->descontarSaldo($costoNormal);
+                    $tarjeta->incrementarViaje();
                     if($tarjeta->puedeCargarSaldoPendiente()){
                         $tarjeta->cargarSaldoPendiente($saldoInicial);
                     }
@@ -48,6 +49,7 @@ class Colectivo
                 if($tarjeta->puedeViajarGratis($tiempo)){
                     $costoNormal = 0;
                     $tarjeta->descontarSaldo($costoNormal);
+                    $tarjeta->incrementarViaje();
                     if($tarjeta->puedeCargarSaldoPendiente()){
                         $tarjeta->cargarSaldoPendiente($saldoInicial);
                     }
@@ -55,13 +57,18 @@ class Colectivo
                 }
                 else{
                     $tarjeta->descontarSaldo($costoNormal);
+                    $tarjeta->incrementarViaje();
                     if($tarjeta->puedeCargarSaldoPendiente()){
                         $tarjeta->cargarSaldoPendiente($saldoInicial);
                     }
                 }
             }
             elseif ($tarjeta instanceof Tarjeta) {
+                $costoNormal *=
+                $tarjeta->calcularCostoBoletoNormal($tiempo);
                 $tarjeta->descontarSaldo($costoNormal);
+                $tarjeta->incrementarViaje();
+                $tarjeta->setFechaUltimoViaje($tiempo);
                 if($tarjeta->puedeCargarSaldoPendiente()){
                     $tarjeta->cargarSaldoPendiente($saldoInicial);
                 }
@@ -70,7 +77,7 @@ class Colectivo
             if($diferencia < 0){
                 $saldoNegativo = abs($diferencia);
             }
-            return new Boleto($saldoInicial, $costoNormal,$tipoTarjeta,$this->linea,$tarjeta->getId(),$abonoNegativo = $saldoNegativo);
+            return new Boleto($saldoInicial, $costoNormal,$tipoTarjeta,$this->linea,$tarjeta->getId(),$abonoNegativo = $saldoNegativo, $tiempo);
         } else {
             return false;
         }

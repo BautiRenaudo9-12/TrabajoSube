@@ -7,7 +7,7 @@ class Boleto
 {
     private $dataTarjeta;
 
-    public function __construct($saldoInicial, $tarifa, $tipoTarjeta='normal', $lineaColectivo, $idTarjeta, $abonoNegativo) {
+    public function __construct($saldoInicial, $tarifa, $tipoTarjeta='normal', $lineaColectivo, $idTarjeta, $abonoNegativo, TiempoInterface $tiempo) {
         date_default_timezone_set('America/Argentina/Buenos_Aires');
 
         $this->dataTarjeta = [
@@ -17,7 +17,7 @@ class Boleto
             'tipoTarjeta' => $tipoTarjeta,
             'lineaColectivo' => $lineaColectivo,
             'idTarjeta' => $idTarjeta,
-            'fecha' => date('d/m/Y H:i:s', time()),
+            'fecha' => date('d/m/Y H:i:s', $tiempo->time()),
             'abonoNegativo' => 'Abona saldo ' . $abonoNegativo,
         ];
     }

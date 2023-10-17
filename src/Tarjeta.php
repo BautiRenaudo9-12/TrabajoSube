@@ -11,10 +11,10 @@ class Tarjeta
     private $limiteSaldo = 6600;
     private $montoPendienteAcreditacion = 0;
     private $minSaldo = -211.84;
-
+    private $cantViajesRealizados = 0;
     public $tipoFranquicia;
-
     private $cargasPosibles;
+    private $fechaUltimoViaje;
 
     public function __construct($saldoInicial = 0)
     {
@@ -105,6 +105,42 @@ class Tarjeta
 
     public function getTipoTarjeta(){
         return $this->tipoFranquicia;
+    }
+
+    public function incrementarViaje(){
+        $this->cantViajesRealizados ++;
+    }
+
+    public function setFechaUltimoViaje(TiempoInterface $tiempo){
+        $this->fechaUltimoViaje = $tiempo->time();
+    }
+
+    public function getCantViajesRealizados(){
+        return $this->cantViajesRealizados;
+    }
+
+    public function calcularCostoBoletoNormal(TiempoInterface $tiempo)
+    {
+        if(date('m-Y', $tiempo->time()) !== date('m-Y', $this->fechaUltimoViaje)){
+            $this->cantViajesRealizados = 0;
+        }
+        if ($this->tipoFranquicia === 'normal') {
+            // Verificar en qué rango de viajes se encuentra
+            if ($this->cantViajesRealizados <= 29) {
+                // Primer rango: viaje 1-29, tarifa normal
+                return 1;
+            } elseif ($this->cantViajesRealizados >= 30 && $this->cantViajesRealizados <= 79) {
+                // Segundo rango: viaje 30-79, descuento del 20%
+                return 0.8;
+            } elseif ($this->cantViajesRealizados >= 80){
+                // Tercer rango: 80 en adelante, descuento del 25%
+                return 0.75;
+            }
+        } else {
+            // Tarjeta con franquicia diferente (por ejemplo, "completa" o "parcial")
+            // No se aplica descuento, devuelve la tarifa normal
+            return 1;
+        }
     }
 }
 
