@@ -200,24 +200,22 @@ class TarjetaTest extends TestCase
         $tarjeta = new Tarjeta(6600, $tiempoFalso);
         $colectivo = new Colectivo(145);
 
-        $boleto;
+        $boleto = false;
         
-        $tarjeta->cargarSaldo(20000);
+        $tarjeta->cargarSaldo(4000);
+        $tarjeta->cargarSaldo(4000);
 
         for ($i = 1; $i <= 81; $i++) {
             $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
             if($i <= 29){
-                echo "  " . $tarjeta->getCantViajesRealizados() . "  ";
                 $this->assertEquals(1, $tarjeta->calcularCostoBoletoNormal($tiempoFalso));
             }
             elseif($i >= 30 && $i <= 79 ){
-                echo "  " . $tarjeta->getCantViajesRealizados() . "  ";
                 $this->assertEquals(0.8, $tarjeta->calcularCostoBoletoNormal($tiempoFalso));
             }
-            // else{
-            //     echo "  " . $tarjeta->getCantViajesRealizados() . "  ";
-            //     $this->assertEquals(0.75, $tarjeta->calcularCostoBoletoNormal($tiempoFalso));
-            // }
+             else{
+                 $this->assertEquals(0.75, $tarjeta->calcularCostoBoletoNormal($tiempoFalso));
+             }
         }
     }
 }
