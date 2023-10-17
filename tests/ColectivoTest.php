@@ -12,7 +12,7 @@ class ColectivoTest extends TestCase
     public function testPagarConSaldoSuficiente()
     {
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
         $tarjeta = new Tarjeta(200);
 
         $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
@@ -24,7 +24,7 @@ class ColectivoTest extends TestCase
     public function testGetTarifa()
     {
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
         $tarjeta = new Tarjeta(200);
 
         $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
@@ -35,11 +35,31 @@ class ColectivoTest extends TestCase
     public function testGetSaldo()
     {
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
         $tarjeta = new Tarjeta(200);
 
         $boleto = $colectivo->pagarCon($tarjeta,$tiempoFalso);
 
+        $this->assertEquals(15, $tarjeta->getSaldo());
+    }
+
+    public function testLineasInterurbanas()
+    {
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
+        $colectivo = new Colectivo(145, true);
+        $tarjeta = new Tarjeta(200);
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+        $this->assertEquals(16, $tarjeta->getSaldo());
+    }
+
+    public function testLineasNoInterurbanas()
+    {
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
+        $colectivo = new Colectivo(145, false);
+        $tarjeta = new Tarjeta(200);
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
         $this->assertEquals(15, $tarjeta->getSaldo());
     }
 }

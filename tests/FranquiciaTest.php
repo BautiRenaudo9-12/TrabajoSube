@@ -13,7 +13,7 @@ class FranquiciaTest extends TestCase
 
     public function testFranquiciaCompletaNoMasDeDosViajesPorDia(){
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
         $tarjeta = new FranquiciaCompleta(185, $tiempoFalso);
 
         // Primer viaje del dia gratiuto
@@ -35,7 +35,7 @@ class FranquiciaTest extends TestCase
     public function testFranquiciaCompletaPrecioNormalDespuesDeDosViajes()
     {
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
         $tarjeta = new FranquiciaCompleta(185, $tiempoFalso);
 
         // Boleto gratuito 1
@@ -69,7 +69,7 @@ class FranquiciaTest extends TestCase
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
 
         $tarjeta = new MedioBoleto(100, $tiempoFalso);
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         $this->assertTrue($tarjeta->esFranjaHorariaValida($tiempoFalso));
         $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
@@ -91,7 +91,7 @@ class FranquiciaTest extends TestCase
         $tiempoFalso = new TiempoFalso(mktime(0, 0, 0, 10, 17, 2023));
 
         $tarjeta = new MedioBoleto(100, $tiempoFalso);
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         $this->assertFalse($tarjeta->esFranjaHorariaValida($tiempoFalso));
         $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);

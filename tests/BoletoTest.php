@@ -24,7 +24,7 @@ class BoletoTest extends TestCase
         $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
         $tarjetaCompleta = new FranquiciaCompleta(100, $tiempoFalso);
 
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         $boletoNormal = $colectivo->pagarCon($tarjetaNormal, $tiempoFalso);
 
@@ -49,7 +49,7 @@ class BoletoTest extends TestCase
         $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
         $tarjetaCompleta = new FranquiciaCompleta(100, $tiempoFalso);
 
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         $boletoNormal = $colectivo->pagarCon($tarjetaNormal, $tiempoFalso);
 
@@ -69,7 +69,7 @@ class BoletoTest extends TestCase
     // public function testFecha()
     // {
     //     $tarjetaNormal = new Tarjeta(100);
-    //     $colectivo = new Colectivo(145);
+    //     $colectivo = new Colectivo(145, false);
 
     //     $boletoNormal = $colectivo->pagarCon($tarjetaNormal);
     //     $dataTarjeta = $boletoNormal->getDataTarjeta();

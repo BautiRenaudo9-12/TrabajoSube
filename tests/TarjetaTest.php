@@ -52,7 +52,7 @@ class TarjetaTest extends TestCase
     {
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023)); // Crear una instancia de TiempoFalso
         $tarjeta = new MedioBoleto(1000, $tiempoFalso); // Inyectar TiempoFalso en MedioBoleto
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         // Realizar el primer viaje, que siempre debería ser exitoso
         $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
@@ -114,7 +114,7 @@ class TarjetaTest extends TestCase
     public function testSaldoPendienteAcreditacionNormal()
     {
         $tarjeta = new Tarjeta(6500);
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
 
         $tarjeta->cargarSaldo(150);
@@ -139,7 +139,7 @@ class TarjetaTest extends TestCase
     {
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $tarjeta = new MedioBoleto(6500, $tiempoFalso);
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         $tarjeta->cargarSaldo(150);
         $this->assertEquals(50, $tarjeta->getMontoPendiente());
@@ -165,7 +165,7 @@ class TarjetaTest extends TestCase
     {
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $tarjeta = new FranquiciaCompleta(6500, $tiempoFalso);
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         $tarjeta->cargarSaldo(150);
         $this->assertEquals(50, $tarjeta->getMontoPendiente());
@@ -198,7 +198,7 @@ class TarjetaTest extends TestCase
     public function testBoletoUsoFrecuente(){
         $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $tarjeta = new Tarjeta(6600, $tiempoFalso);
-        $colectivo = new Colectivo(145);
+        $colectivo = new Colectivo(145, false);
 
         $boleto = false;
         

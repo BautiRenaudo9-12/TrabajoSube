@@ -7,12 +7,20 @@ use TrabajoSube\Tarjeta;
 
 class Colectivo
 {
-    private $tarifa = 185;
+    private $tarifa;
     private $linea;
-
-    public function __construct($linea)
+    private $esInterurbana;
+    public function __construct($linea, $esInterurbana)
     {
         $this->linea = $linea;
+        $this->esInterurbana = (bool) $esInterurbana;
+
+        if( $this->esInterurbana ) {
+            $this->tarifa = 184;
+        }
+        else {
+            $this->tarifa = 185;
+        }
     }
 
     public function pagarCon(Tarjeta $tarjeta, TiempoInterface $tiempo)
