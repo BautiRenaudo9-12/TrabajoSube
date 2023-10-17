@@ -28,16 +28,29 @@ class Colectivo
             if ($tarjeta instanceof MedioBoleto) {
                 $tarjeta->cambiarTiempo($tiempo);
                 $tipoTarjeta = 'parcial';
-                if($tarjeta->puedePagarMedioBoleto($tiempo)){
-                    if($tarjeta->getCantViajesDia() < 4){
-                        $costoNormal    =$tarjeta->calcularCostoBoleto ($costoNormal);
+                if($tarjeta->esFranjaHorariaValida($tiempo)){
+                    if($tarjeta->pasaron5Mins($tiempo)){
+                        if($tarjeta->puedePagarMedioBoleto($tiempo)){
+                            $costoNormal    =$tarjeta->calcularCostoBoleto ($costoNormal);
+                            $tarjeta->descontarSaldo($costoNormal);
+                            $tarjeta->incrementarViaje();
+                            if($tarjeta->puedeCargarSaldoPendiente()){
+                                $tarjeta->cargarSaldoPendiente($saldoInicial);
+                            }
+                            $tarjeta->setUltimoViaje($tiempo);
+                        }
+                        else{
+                            $tarjeta->descontarSaldo($costoNormal);
+                            $tarjeta->incrementarViaje();
+                            if($tarjeta->puedeCargarSaldoPendiente()){
+                                $tarjeta->cargarSaldoPendiente($saldoInicial);
+                            }
+                            $tarjeta->setUltimoViaje($tiempo);
+                        }
                     }
-                    $tarjeta->descontarSaldo($costoNormal);
-                    $tarjeta->incrementarViaje();
-                    if($tarjeta->puedeCargarSaldoPendiente()){
-                        $tarjeta->cargarSaldoPendiente($saldoInicial);
+                    else{
+                        return false;
                     }
-                    $tarjeta->setUltimoViaje($tiempo);
                 }
                 else{
                     return false;
@@ -46,21 +59,26 @@ class Colectivo
             elseif($tarjeta instanceof FranquiciaCompleta){
                 $tarjeta->cambiarTiempo($tiempo);
                 $tipoTarjeta = 'completa';
-                if($tarjeta->puedeViajarGratis($tiempo)){
-                    $costoNormal = 0;
-                    $tarjeta->descontarSaldo($costoNormal);
-                    $tarjeta->incrementarViaje();
-                    if($tarjeta->puedeCargarSaldoPendiente()){
-                        $tarjeta->cargarSaldoPendiente($saldoInicial);
+                if($tarjeta->esFranjaHorariaValida($tiempo)){
+                    if($tarjeta->puedeViajarGratis($tiempo)){
+                        $costoNormal = 0;
+                        $tarjeta->descontarSaldo($costoNormal);
+                        $tarjeta->incrementarViaje();
+                        if($tarjeta->puedeCargarSaldoPendiente()){
+                            $tarjeta->cargarSaldoPendiente($saldoInicial);
+                        }
+                        $tarjeta->setUltimoViaje($tiempo);
                     }
-                    $tarjeta->setUltimoViaje($tiempo);
+                    else{
+                        $tarjeta->descontarSaldo($costoNormal);
+                        $tarjeta->incrementarViaje();
+                        if($tarjeta->puedeCargarSaldoPendiente()){
+                            $tarjeta->cargarSaldoPendiente($saldoInicial);
+                        }
+                    }
                 }
                 else{
-                    $tarjeta->descontarSaldo($costoNormal);
-                    $tarjeta->incrementarViaje();
-                    if($tarjeta->puedeCargarSaldoPendiente()){
-                        $tarjeta->cargarSaldoPendiente($saldoInicial);
-                    }
+                    return false;
                 }
             }
             elseif ($tarjeta instanceof Tarjeta) {

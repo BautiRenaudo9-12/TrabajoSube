@@ -173,6 +173,19 @@ class FranquiciaCompleta extends Tarjeta
         return $this->ultimoViaje;
     }
 
+    public function esFranjaHorariaValida(TiempoInterface $tiempo)
+    {
+        $tiempoActual = $tiempo->time();
+        $diaSemana = date('N', $tiempoActual); 
+        $hora = date('H', $tiempoActual);
+        
+        if ($diaSemana >= 1 && $diaSemana <= 5 && $hora >= 6 && $hora < 22) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function puedeViajarGratis(TiempoInterface $tiempo)
     {
         $fechaActual = date('d/m/Y', $tiempo->time());
@@ -224,6 +237,29 @@ class MedioBoleto extends Tarjeta
         return $this->ultimoViaje;
     }
 
+    public function esFranjaHorariaValida(TiempoInterface $tiempo)
+    {
+        $tiempoActual = $tiempo->time();
+        $diaSemana = date('N', $tiempoActual); 
+        $hora = date('H', $tiempoActual);
+        
+        if ($diaSemana >= 1 && $diaSemana <= 5 && $hora >= 6 && $hora < 22) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function pasaron5Mins(TiempoInterface $tiempo){
+        if ($this->ultimoViaje === null) {
+            return true; // Si es el primer viaje, siempre se permite
+        }
+        $tiempoActual = $tiempo->time(); // Utiliza la implementación de TiempoInterface
+        $tiempoPasado = $tiempoActual - $this->ultimoViaje;
+
+        return ($tiempoPasado >= 300);
+    }
+
     public function puedePagarMedioBoleto(TiempoInterface $tiempo)
     {
         if ($this->ultimoViaje === null) {
@@ -231,7 +267,7 @@ class MedioBoleto extends Tarjeta
         }
 
         if($this->cantViajesDia >= 4){
-            return true;
+            return false;
         }
 
         $tiempoActual = $tiempo->time(); // Utiliza la implementación de TiempoInterface
@@ -243,7 +279,7 @@ class MedioBoleto extends Tarjeta
         }
 
         // Se permite el viaje si han pasado al menos 5 minutos (300 segundos) y no se han excedido los 4 viajes en un día
-        return ($tiempoPasado >= 300);
+        return true;
     }
 
     public function cambiarTiempo($tiempoCambiar){

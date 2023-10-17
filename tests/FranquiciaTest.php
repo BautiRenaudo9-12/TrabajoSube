@@ -12,7 +12,7 @@ class FranquiciaTest extends TestCase
 {
 
     public function testFranquiciaCompletaNoMasDeDosViajesPorDia(){
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $colectivo = new Colectivo(145);
         $tarjeta = new FranquiciaCompleta(185, $tiempoFalso);
 
@@ -34,7 +34,7 @@ class FranquiciaTest extends TestCase
 
     public function testFranquiciaCompletaPrecioNormalDespuesDeDosViajes()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $colectivo = new Colectivo(145);
         $tarjeta = new FranquiciaCompleta(185, $tiempoFalso);
 
@@ -56,11 +56,55 @@ class FranquiciaTest extends TestCase
 
     public function testMedioBoletoCalculaCostoCorrecto()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $tarjeta = new MedioBoleto(100, $tiempoFalso);
         $costoNormal = 100; // Supongamos que el costo normal del boleto es 100
         $costoEsperado = $costoNormal / 2;
         $this->assertEquals($costoEsperado, $tarjeta->calcularCostoBoleto($costoNormal));
+    }
+
+    public function testViajeDentroDeFranjaHoraria()
+    {
+        // Medio Boleto
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
+
+        $tarjeta = new MedioBoleto(100, $tiempoFalso);
+        $colectivo = new Colectivo(145);
+
+        $this->assertTrue($tarjeta->esFranjaHorariaValida($tiempoFalso));
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+
+        $this->assertInstanceOf(Boleto::class, $boleto);
+
+        // Franquicias Completas
+        $tarjeta = new FranquiciaCompleta(100, $tiempoFalso);
+        $this->assertTrue($tarjeta->esFranjaHorariaValida($tiempoFalso));
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+
+        $this->assertInstanceOf(Boleto::class, $boleto);
+    }
+
+    public function testViajeFueraDeFranjaHoraria()
+    {
+        // Medio Boleto
+        $tiempoFalso = new TiempoFalso(mktime(0, 0, 0, 10, 17, 2023));
+
+        $tarjeta = new MedioBoleto(100, $tiempoFalso);
+        $colectivo = new Colectivo(145);
+
+        $this->assertFalse($tarjeta->esFranjaHorariaValida($tiempoFalso));
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+
+        $this->assertFalse($boleto);
+
+        // Franquicias Completas
+        $tarjeta = new FranquiciaCompleta(100, $tiempoFalso);
+        $this->assertFalse($tarjeta->esFranjaHorariaValida($tiempoFalso));
+
+        $boleto = $colectivo->pagarCon($tarjeta, $tiempoFalso);
+
+        $this->assertFalse($boleto);
     }
 }
 ?>
