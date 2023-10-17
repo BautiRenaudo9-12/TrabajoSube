@@ -12,14 +12,14 @@ class BoletoTest extends TestCase
 {
     public function testTarifaCorrecta()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $boleto = new Boleto(1000, 500,'normal',145,1,0,$tiempoFalso);
         $this->assertEquals(500, $boleto->getTarifa());
     }
 
     public function testSaldoRestanteCorrecto()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $tarjetaNormal = new Tarjeta(1000);
         $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
         $tarjetaCompleta = new FranquiciaCompleta(100, $tiempoFalso);
@@ -44,7 +44,7 @@ class BoletoTest extends TestCase
 
     public function testTiposBoleto()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $tarjetaNormal = new Tarjeta(100);
         $tarjetaMedioBoleto = new MedioBoleto(100, $tiempoFalso);
         $tarjetaCompleta = new FranquiciaCompleta(100, $tiempoFalso);

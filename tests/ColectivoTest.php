@@ -11,7 +11,7 @@ class ColectivoTest extends TestCase
 {
     public function testPagarConSaldoSuficiente()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
@@ -23,7 +23,7 @@ class ColectivoTest extends TestCase
 
     public function testGetTarifa()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
@@ -34,7 +34,7 @@ class ColectivoTest extends TestCase
 
     public function testGetSaldo()
     {
-        $tiempoFalso = new TiempoFalso();
+        $tiempoFalso = new TiempoFalso(mktime(10, 0, 0, 10, 17, 2023));
         $colectivo = new Colectivo(145);
         $tarjeta = new Tarjeta(200);
 
